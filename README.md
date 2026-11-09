@@ -6,7 +6,7 @@ Uma ferramenta de linha de comando (CLI) robusta para testar a conectividade de 
 ![UV](https://img.shields.io/badge/Managed%20by-UV-purple?logo=python)
 ![OS](https://img.shields.io/badge/OS-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey)
 
-<img width="910" height="586" alt="tcp-ping-print" src="https://github.com/user-attachments/assets/0dbde8fe-c0be-4be3-83f1-1a989bcb04cf" />
+<img width="910" height="586" alt="tcping-print" src="https://github.com/user-attachments/assets/0dbde8fe-c0be-4be3-83f1-1a989bcb04cf" />
 
 
 ## ✨ Funcionalidades
@@ -45,14 +45,14 @@ pip install uv
 Direto do GitHub, sem precisar clonar:
 
 ```bash
-uv tool install git+https://github.com/enricopablo/TCP-Ping
+uv tool install git+https://github.com/enricopablo/TCPing
 ```
 
 Ou a partir de um clone local:
 
 ```bash
-git clone https://github.com/enricopablo/TCP-Ping.git
-cd TCP-Ping/
+git clone https://github.com/enricopablo/TCPing.git
+cd TCPing/
 uv tool install --force .
 ```
 
@@ -80,7 +80,7 @@ uv tool dir         # pasta dos ambientes isolados
 Para testar sem instalar nada:
 
 ```bash
-uvx --from git+https://github.com/enricopablo/TCP-Ping tcping google.com 443
+uvx --from git+https://github.com/enricopablo/TCPing tcping google.com 443
 ```
 
 ### Atualizar / Remover
