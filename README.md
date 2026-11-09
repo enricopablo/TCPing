@@ -1,6 +1,8 @@
 # 🚀 TCPING — TCP Ping Tool (Python + UV)
 
-Uma ferramenta de linha de comando (CLI) robusta para testar a conectividade de portas **TCP**. Diferente do ping tradicional (ICMP), esta ferramenta valida se serviços específicos (Web, SSH, Banco de Dados, etc.) estão aceitando conexões, fornecendo métricas de latência e estabilidade.
+🇺🇸 **English** | 🇧🇷 [Português](README.pt-BR.md)
+
+A robust command-line tool (CLI) to test **TCP** port connectivity. Unlike the traditional ping (ICMP), it checks whether specific services (web, SSH, databases, etc.) are accepting connections, reporting latency and stability metrics.
 
 ![Python](https://img.shields.io/badge/Python-3.13+-blue?logo=python)
 ![UV](https://img.shields.io/badge/Managed%20by-UV-purple?logo=python)
@@ -8,20 +10,22 @@ Uma ferramenta de linha de comando (CLI) robusta para testar a conectividade de 
 
 <img width="794" height="395" alt="print-windows" src="https://github.com/user-attachments/assets/c6129d03-b8c3-4003-9165-b621e619f4f3" />
 
-## ✨ Funcionalidades
+## ✨ Features
 
-* **Handshake TCP:** Mede o tempo de resposta real da aplicação (SYN/SYN-ACK).
-* **Estatísticas Avançadas:** Média, Mínimo, Máximo e **Jitter** (variação da latência).
-* **Modo Contagem (`-c`):** Defina um limite de disparos ou rode infinitamente.
-* **Instalável como comando:** Via `uv tool`, disponível em qualquer terminal como `tcping`.
-* **Interface Rica:** Utiliza a biblioteca `Rich` para tabelas e cores no terminal.
+* **TCP handshake:** Measures the real response time of the service (SYN/SYN-ACK).
+* **Advanced statistics:** Average, minimum, maximum and **jitter** (latency variation).
+* **Count mode (`-c`):** Set a number of attempts or run forever.
+* **Multiple targets:** Several hosts and ports at once, tested in parallel.
+* **Scripting friendly:** Exit codes like `ping` and JSON output.
+* **Installable as a command:** Via `uv tool`, available in any terminal as `tcping`.
+* **Rich interface:** Uses the `Rich` library for tables and colors in the terminal.
 
 ---
 
-## 🛠️ Pré-requisitos
+## 🛠️ Prerequisites
 
-* **`uv`** (gerenciador de pacotes Python ultra-rápido): obrigatório.
-* **Git**: necessário para instalar direto do GitHub (`git+https://...`) ou via clone. Sem ele, use a [instalação sem Git](#instalação-sem-git).
+* **`uv`** (ultra-fast Python package manager): required.
+* **Git**: needed to install straight from GitHub (`git+https://...`) or from a clone. Without it, see [installing without Git](#installing-without-git).
 
 ### uv
 
@@ -36,7 +40,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-Ou, em qualquer sistema, via `pip`:
+Or, on any system, via `pip`:
 
 ```bash
 pip install uv
@@ -44,24 +48,24 @@ pip install uv
 
 ### Git
 
-Confira se já está instalado com `git --version`. Se não estiver:
+Check whether it is installed with `git --version`. If it is not:
 
-| Sistema | Comando |
+| System | Command |
 |---|---|
 | **Debian / Ubuntu / Linux Mint** | `sudo apt install git` |
 | **Fedora** | `sudo dnf install git` |
 | **macOS** | `xcode-select --install` |
 | **Windows** | `winget install --id Git.Git -e` |
 
-## 📦 Instalação
+## 📦 Installation
 
-Direto do GitHub, sem precisar clonar:
+Straight from GitHub, no clone needed:
 
 ```bash
 uv tool install git+https://github.com/enricopablo/TCPing
 ```
 
-Ou a partir de um clone local:
+Or from a local clone:
 
 ```bash
 git clone https://github.com/enricopablo/TCPing.git
@@ -69,112 +73,112 @@ cd TCPing/
 uv tool install --force .
 ```
 
-### Instalação sem Git
+### Installing without Git
 
-Se o Git não estiver instalado (erro `Git executable not found`), instale a partir do `.zip` do GitHub:
+If Git is not installed (error `Git executable not found`), install from the GitHub `.zip`:
 
 ```bash
 uv tool install "tcping @ https://github.com/enricopablo/TCPing/archive/refs/heads/main.zip"
 ```
 
-Pronto! O comando `tcping` fica disponível em qualquer terminal (macOS, Linux e Windows).
+Done! The `tcping` command is available in any terminal (macOS, Linux and Windows).
 
-> Se o terminal não encontrar o comando, rode `uv tool update-shell` e abra um novo terminal.
+> If the terminal cannot find the command, run `uv tool update-shell` and open a new terminal.
 
-### 📍 Onde o `tcping` fica instalado
+### 📍 Where `tcping` is installed
 
-O `uv tool` instala o executável (que precisa estar no `PATH`) e um ambiente isolado com o código e as dependências:
+`uv tool` installs the executable (which must be on your `PATH`) and an isolated environment with the code and its dependencies:
 
-| Sistema | Executável | Ambiente isolado |
+| System | Executable | Isolated environment |
 |---|---|---|
 | **Windows** | `%USERPROFILE%\.local\bin\tcping.exe` | `%APPDATA%\uv\data\tools\tcping\` |
 | **macOS** | `~/.local/bin/tcping` | `~/.local/share/uv/tools/tcping/` |
 | **Linux** | `~/.local/bin/tcping` | `~/.local/share/uv/tools/tcping/` |
 
-Esses caminhos podem mudar conforme variáveis de ambiente (`UV_TOOL_BIN_DIR`, `UV_TOOL_DIR`, `XDG_BIN_HOME`, `XDG_DATA_HOME`). Para conferir na sua máquina:
+These paths may change according to environment variables (`UV_TOOL_BIN_DIR`, `UV_TOOL_DIR`, `XDG_BIN_HOME`, `XDG_DATA_HOME`). To check on your machine:
 
 ```bash
-uv tool dir --bin   # pasta do executável
-uv tool dir         # pasta dos ambientes isolados
+uv tool dir --bin   # executable folder
+uv tool dir         # isolated environments folder
 ```
 
-Para testar sem instalar nada (requer Git):
+To try it without installing anything (requires Git):
 
 ```bash
 uvx --from git+https://github.com/enricopablo/TCPing tcping google.com 443
 ```
 
-### Atualizar / Remover
+### Upgrade / Uninstall
 
 ```bash
-uv tool upgrade tcping      # instalado via GitHub (git+https)
-uv tool install --force .   # instalado via clone (após git pull)
+uv tool upgrade tcping      # installed from GitHub (git+https)
+uv tool install --force .   # installed from a clone (after git pull)
 uv tool uninstall tcping
 ```
 
-Instalado sem Git (`.zip`)? Para atualizar, repita o comando de instalação com `--force --reinstall`:
+Installed without Git (`.zip`)? To upgrade, repeat the install command with `--force --reinstall`:
 
 ```bash
 uv tool install --force --reinstall "tcping @ https://github.com/enricopablo/TCPing/archive/refs/heads/main.zip"
 ```
 
-## 🚀 Como Usar
+## 🚀 Usage
 
 ```bash
-tcping <host...> <porta...> [opções]
+tcping <host...> <port...> [options]
 ```
 
-Exemplos:
+Examples:
 
 ```bash
-# Teste básico (roda até você apertar Ctrl+C)
+# Basic test (runs until you press Ctrl+C)
 tcping google.com 443
 
-# 10 tentativas com intervalo de 0.5s
+# 10 attempts with a 0.5s interval
 tcping 1.1.1.1 80 -c 10 -i 0.5
 
-# Só o relatório final, sem as tentativas
+# Final report only, without each attempt
 tcping google.com 443 -c 5 -r
 ```
 
-### 🎯 Vários Alvos
+### 🎯 Multiple Targets
 
-Informe quantos hosts e portas quiser: **números são portas, o resto são hosts**. O `tcping` testa todas as combinações, **em paralelo**:
+Pass as many hosts and ports as you like: **numbers are ports, everything else is a host**. `tcping` tests every combination, **in parallel**:
 
 ```bash
-tcping web1 web2 443          # 2 alvos: web1:443, web2:443
-tcping google.com 80 443      # 2 alvos: google.com:80, google.com:443
-tcping web1 web2 80 443       # 4 alvos: todas as combinações
+tcping web1 web2 443          # 2 targets: web1:443, web2:443
+tcping google.com 80 443      # 2 targets: google.com:80, google.com:443
+tcping web1 web2 80 443       # 4 targets: every combination
 ```
 
-Com mais de um alvo, a saída vira uma tabela atualizada ao vivo, com a última latência, estatísticas e o histórico das últimas 10 tentativas de cada alvo. Ao final é exibido um resumo comparativo.
+With more than one target, the output becomes a live-updating table with the last latency, statistics and the history of the last 10 attempts of each target. A side-by-side summary is shown at the end.
 
-- `-c` define quantas tentativas **cada alvo** recebe; `-i` é o intervalo entre as rodadas.
-- Um host não encontrado é informado e os demais continuam sendo testados.
+- `-c` sets how many attempts **each target** gets; `-i` is the interval from the start of one round to the start of the next (like `ping`). If a round takes longer than `-i`, the next one starts right away.
+- A host that is not found is reported and the others keep being tested.
 
-## 🤖 Uso em Scripts e Automação
+## 🤖 Scripting and Automation
 
-### Código de saída
+### Exit codes
 
-Igual ao `ping`, o `tcping` informa o resultado pelo código de saída:
+Like `ping`, `tcping` reports the result through its exit code:
 
-| Código | Significado |
+| Code | Meaning |
 |---|---|
-| `0` | Todos os alvos tiveram ao menos uma conexão bem-sucedida |
-| `1` | Algum alvo não teve nenhuma conexão bem-sucedida |
-| `2` | Erro de uso ou host não encontrado |
+| `0` | Every target had at least one successful connection |
+| `1` | Some target had no successful connection |
+| `2` | Usage error (including invalid `-c`, `-i` and `-t` values) or host not found |
 
-Com um único alvo, isso equivale a: `0` se ele respondeu ao menos uma vez, `1` se não respondeu nenhuma.
+With a single target, this means: `0` if it replied at least once, `1` if it never replied.
 
 ```bash
-tcping db.local 5432 -c 3 -r && ./deploy.sh              # só faz o deploy se o banco responder
-tcping db.local 5432 -c 3 -r || echo "Banco fora!"        # alerta se não responder
-tcping web1 web2 db 443 5432 -c 3 -r && ./deploy.sh      # só se TODOS os alvos responderem
+tcping db.local 5432 -c 3 -r && ./deploy.sh              # deploy only if the database replies
+tcping db.local 5432 -c 3 -r || echo "Database down!"    # alert if it does not reply
+tcping web1 web2 db 443 5432 -c 3 -r && ./deploy.sh      # only if ALL targets reply
 ```
 
-### Saída JSON (`--json`)
+### JSON output (`--json`)
 
-Cada evento vira uma linha JSON ([NDJSON](https://github.com/ndjson/ndjson-spec)), identificada pelo campo `type`:
+Each event becomes one JSON line ([NDJSON](https://github.com/ndjson/ndjson-spec)), identified by the `type` field:
 
 ```bash
 tcping google.com 443 -c 2 --json
@@ -186,76 +190,77 @@ tcping google.com 443 -c 2 --json
 {"type": "summary", "host": "google.com", "ip": "142.250.219.206", "port": 443, "family": "ipv4", "attempts": 2, "success": 1, "failed": 1, "success_rate": 50.0, "latency_ms": {"min": 17.52, "avg": 17.52, "max": 17.52, "jitter": 0.0}, "duration_s": 2.24}
 ```
 
-- Com vários alvos, há uma linha `summary` **por alvo**, no fim; o campo `seq` é o número da rodada.
-- Com `-r`, apenas as linhas `summary` são emitidas.
-- Host não encontrado gera `{"type": "error", ...}` com código de saída `2`; os demais alvos continuam.
-- Valores ausentes (latência de uma falha, latência sem nenhum sucesso) são `null`.
+- With multiple targets, there is one `summary` line **per target**, at the end; `seq` is the round number.
+- With `-r`, only the `summary` lines are emitted.
+- A host that is not found produces `{"type": "error", ..., "error": "Host not found"}` and exit code `2`; the other targets continue.
+- Missing values (latency of a failed attempt, latency without any success) are `null`.
 
 ```bash
-tcping google.com 443 -c 5 --json -r | jq .latency_ms.avg   # latência média
-tcping google.com 443 --json >> historico.jsonl             # monitoramento contínuo
+tcping google.com 443 -c 5 --json -r | jq .latency_ms.avg   # average latency
+tcping google.com 443 --json >> history.jsonl               # continuous monitoring
 ```
 
-## 📊 Opções da CLI
+## 📊 CLI Options
 
 ```text
-Opção       Atalho  Descrição                                   Padrão
---count     -c      Número de pings por alvo (0 para infinito)  0
---interval  -i      Intervalo entre pings (segundos)            1.0
---timeout   -t      Tempo limite de espera (segundos)           2.0
-            -4      Força o uso de IPv4                         -
-            -6      Força o uso de IPv6                         -
---report    -r      Exibe só o relatório final                  -
---json              Saída em JSON (uma linha por evento)        -
---version   -V      Exibe a versão instalada                    -
---help      -h      Exibe a ajuda                               -
+Option      Short   Description                                 Default
+--count     -c      Attempts per target (0 = infinite)          0
+--interval  -i      Interval between rounds (seconds, >= 0)     1.0
+--timeout   -t      Timeout per attempt (seconds, > 0)          2.0
+            -4      Force IPv4                                  -
+            -6      Force IPv6                                  -
+--report    -r      Show only the final report                  -
+--json              JSON output (one line per event)            -
+--version   -V      Show the installed version                  -
+--help      -h      Show the help                               -
 ```
 
-### 🔍 Entendendo a Saída
+### 🔍 Understanding the Output
 
-Ao executar o `tcping`, a ferramenta realiza o **Three-Way Handshake do TCP**. A latência exibida é o tempo decorrido entre o envio do `SYN` e o recebimento do `SYN-ACK`.
+`tcping` performs the **TCP three-way handshake**. The latency shown is the time between sending the `SYN` and receiving the `SYN-ACK`.
 
-O nome do host é resolvido (DNS) **uma única vez**, antes do primeiro teste, então o tempo de DNS não entra na latência. O IP resolvido aparece no cabeçalho, ex.: `google.com (142.250.79.46):443`. IPv4 e IPv6 são suportados; use `-4` ou `-6` para forçar um deles.
+The host name is resolved (DNS) **only once**, before the first test, so DNS time is not included in the latency. The resolved IP is shown in the header, e.g. `google.com (142.250.79.46):443`. IPv4 and IPv6 are supported; use `-4` or `-6` to force one of them.
 
-- 🟢 ABERTA: O serviço respondeu e a conexão foi aceita.
+- 🟢 `OPEN`: the service replied and the connection was accepted.
 
-- 🔴 FECHADA: A conexão falhou. O motivo aparece entre parênteses:
-  - `Recusada`: o host respondeu, mas nenhum serviço escuta nessa porta.
-  - `Timeout`: sem resposta dentro do tempo limite (geralmente firewall descartando pacotes).
-  - `Rede inalcançável` / `Host inalcançável`: não há rota até o destino.
+- 🔴 `CLOSED`: the connection failed. The reason is shown in parentheses:
+  - `Refused`: the host replied, but no service is listening on that port.
+  - `Timeout`: no reply within the timeout (usually a firewall dropping packets).
+  - `Network unreachable` / `Host unreachable`: there is no route to the destination.
 
-- Jitter: Variação na latência. Valores altos indicam instabilidade na rota ou sobrecarga no host.
+- `Host not found`: the name could not be resolved (DNS).
 
-## 📂 Estrutura do Projeto
+- `Jitter`: latency variation. High values indicate an unstable route or an overloaded host.
+
+## 📂 Project Structure
 
 ```text
 .
 ├── src/tcping/
-│   ├── __init__.py   # Versão do pacote
-│   ├── __main__.py   # Permite `python -m tcping`
-│   ├── cli.py        # Interface de linha de comando (click) e loop de tentativas
-│   ├── output.py     # Exibição: terminal (rich) ou JSON
-│   ├── probe.py      # Resolução de DNS e teste de conexão TCP
-│   ├── stats.py      # Estatísticas e resumo da execução
-│   └── target.py     # Alvos: interpretação dos argumentos e estatísticas por alvo
-├── tests/            # Testes automatizados (pytest)
-├── main.py           # Atalho: `uv run main.py <host> <porta>`
-├── CHANGELOG.md      # Histórico de versões
-├── pyproject.toml    # Configurações do projeto e do comando `tcping`
-├── uv.lock           # Trava de versões de dependências
-└── README.md         # Documentação
+│   ├── __init__.py   # Package version
+│   ├── __main__.py   # Enables `python -m tcping`
+│   ├── cli.py        # Command-line interface (click) and attempt loop
+│   ├── output.py     # Display: terminal (rich) or JSON
+│   ├── probe.py      # DNS resolution and TCP connection test
+│   ├── stats.py      # Statistics and run summary
+│   └── target.py     # Targets: argument parsing and per-target statistics
+├── tests/            # Automated tests (pytest)
+├── main.py           # Shortcut: `uv run main.py <host> <port>`
+├── CHANGELOG.md      # Version history
+├── pyproject.toml    # Project settings and the `tcping` command
+├── uv.lock           # Locked dependency versions
+├── README.md         # Documentation (English)
+└── README.pt-BR.md   # Documentation (Portuguese)
 ```
 
-## 🧑‍💻 Desenvolvimento
+## 🧑‍💻 Development
 
 ```bash
-uv sync                               # cria o ambiente com as dependências
-uv run tcping google.com 443          # roda a versão do código local
-uv run pytest                         # roda os testes (não precisa de internet)
-uv tool install --editable --force .  # (opcional) `tcping` global refletindo o código local
+uv sync                               # create the environment with the dependencies
+uv run tcping google.com 443          # run the local code
+uv run pytest                         # run the tests (no internet required)
+uv tool install --editable --force .  # (optional) global `tcping` reflecting the local code
 ```
 
 ---
-<p align="center">Obviamente feito com 🤖, engenhosidade humana 🤷🏻‍♂️ e uma quantidade suspeita de tokens 🔥.</p>
-
 <p align="center">Obviously made with 🤖, human ingenuity 🤷🏻‍♂️, and a suspicious amount of tokens 🔥.</p>

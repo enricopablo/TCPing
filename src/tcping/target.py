@@ -1,4 +1,4 @@
-"""Alvos (host + porta): interpretação dos argumentos, resolução e estatísticas."""
+"""Targets (host + port): argument parsing, resolution and statistics."""
 
 import socket
 from collections import deque
@@ -7,33 +7,33 @@ from dataclasses import dataclass, field
 from tcping.probe import ResolveError, format_address, resolve
 from tcping.stats import calculate_stats, summarize
 
-HISTORY_SIZE = 10  # tentativas exibidas na coluna "Histórico"
+HISTORY_SIZE = 10  # attempts shown in the "History" column
 
 
 def target_label(host, port):
-    """host:porta, com colchetes para IPv6 literal ([::1]:443)."""
+    """host:port, with brackets for IPv6 literals ([::1]:443)."""
     return f"[{host}]:{port}" if ":" in host else f"{host}:{port}"
 
 
 def parse_targets(values):
-    """Separa os argumentos em hosts e portas: números são portas, o resto são hosts.
+    """Splits the arguments into hosts and ports: numbers are ports, the rest are hosts.
 
-    Retorna (hosts, portas) sem duplicatas, na ordem informada.
-    Levanta ValueError com mensagem amigável em caso de erro.
+    Returns (hosts, ports) without duplicates, in the given order.
+    Raises ValueError with a friendly message on error.
     """
     hosts, ports = [], []
     for value in values:
         if value.isdigit():
             port = int(value)
             if not 1 <= port <= 65535:
-                raise ValueError(f"Porta inválida: {value} (use de 1 a 65535).")
+                raise ValueError(f"Invalid port: {value} (use 1 to 65535).")
             ports.append(port)
         else:
             hosts.append(value)
     if not hosts:
-        raise ValueError("Informe ao menos um host.")
+        raise ValueError("Provide at least one host.")
     if not ports:
-        raise ValueError("Informe ao menos uma porta.")
+        raise ValueError("Provide at least one port.")
     return list(dict.fromkeys(hosts)), list(dict.fromkeys(ports))
 
 
@@ -43,12 +43,12 @@ class Target:
     port: int
     family: int = socket.AF_UNSPEC
     sockaddr: tuple | None = None
-    error: str | None = None  # erro de resolução (DNS)
+    error: str | None = None  # resolution (DNS) error
     success_count: int = 0
     fail_count: int = 0
     latencies: list = field(default_factory=list)
     history: deque = field(default_factory=lambda: deque(maxlen=HISTORY_SIZE))
-    last: tuple | None = None  # (sucesso, latência, erro) da última tentativa
+    last: tuple | None = None  # (success, latency, error) of the last attempt
 
     @property
     def label(self):
@@ -72,7 +72,7 @@ class Target:
         self.last = (success, latency, error)
 
     def stats(self):
-        """(média, mín, máx, jitter) ou None se não houve sucesso."""
+        """(avg, min, max, jitter) or None if there was no success."""
         return calculate_stats(self.latencies) if self.latencies else None
 
     def summary(self, duration_s):
@@ -80,7 +80,7 @@ class Target:
 
 
 def build_targets(hosts, ports, family=socket.AF_UNSPEC):
-    """Cria um alvo por combinação host x porta. Cada host é resolvido uma única vez."""
+    """Creates one target per host x port combination. Each host is resolved only once."""
     targets = []
     for host in hosts:
         try:

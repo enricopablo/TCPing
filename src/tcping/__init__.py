@@ -1,8 +1,8 @@
-"""TCPING - Utilitário de Teste de Conectividade TCP."""
+"""TCPING - TCP connectivity testing tool."""
 
 from importlib.metadata import PackageNotFoundError, version
 
 try:
     __version__ = version("tcping")
-except PackageNotFoundError:  # rodando direto do código-fonte, sem instalar
+except PackageNotFoundError:  # running from source, not installed
     __version__ = "dev"

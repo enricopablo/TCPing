@@ -24,10 +24,10 @@ def test_parse_removes_duplicates_keeping_order():
 @pytest.mark.parametrize(
     "args, message",
     [
-        (["443"], "ao menos um host"),
-        (["google.com"], "ao menos uma porta"),
-        (["google.com", "0"], "Porta inválida"),
-        (["google.com", "70000"], "Porta inválida"),
+        (["443"], "at least one host"),
+        (["google.com"], "at least one port"),
+        (["google.com", "0"], "Invalid port"),
+        (["google.com", "70000"], "Invalid port"),
     ],
 )
 def test_parse_errors(args, message):
@@ -54,8 +54,8 @@ def test_build_targets_cartesian_product():
 def test_build_targets_dns_error_marks_all_ports_of_host():
     targets = build_targets(["host-inexistente.invalid", "127.0.0.1"], [80, 443])
     assert [t.error for t in targets] == [
-        "Host não encontrado",
-        "Host não encontrado",
+        "Host not found",
+        "Host not found",
         None,
         None,
     ]
@@ -67,6 +67,6 @@ def test_target_record_and_history():
         t.record(ok, 5.0 if ok else None, None if ok else "Timeout")
     assert t.success_count == 6
     assert t.fail_count == 6
-    assert len(t.history) == 10  # só as últimas 10
+    assert len(t.history) == 10  # only the last 10
     assert t.last == (False, None, "Timeout")
     assert t.summary(1.0)["latency_ms"]["avg"] == 5.0

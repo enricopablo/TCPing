@@ -9,7 +9,7 @@ def test_calculate_stats_empty():
 
 def test_calculate_stats_single_value_has_zero_jitter():
     assert calculate_stats([10.0]) == (10.0, 10.0, 10.0, 0)
-    assert isinstance(calculate_stats([10.0])[3], float)  # JSON: 0.0, não 0
+    assert isinstance(calculate_stats([10.0])[3], float)  # JSON: 0.0, not 0
 
 
 def test_calculate_stats_values():
@@ -17,7 +17,7 @@ def test_calculate_stats_values():
     assert avg == 20.0
     assert min_lat == 10.0
     assert max_lat == 30.0
-    assert jitter == pytest.approx(10.0)  # desvio padrão amostral
+    assert jitter == pytest.approx(10.0)  # sample standard deviation
 
 
 from tcping.stats import summarize  # noqa: E402

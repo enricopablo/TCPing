@@ -1,7 +1,7 @@
 import socket
 import sys
+import threading
 import time
-from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 
 import click
@@ -11,32 +11,81 @@ from tcping.output import make_output
 from tcping.probe import check_tcp_port
 from tcping.target import build_targets, parse_targets
 
-# Códigos de saída (mesma semântica do ping, generalizada para vários alvos)
-EXIT_OK = 0  # todos os alvos tiveram ao menos uma conexão bem-sucedida
-EXIT_NO_REPLY = 1  # algum alvo não teve nenhuma conexão bem-sucedida
-EXIT_ERROR = 2  # erro de uso, host não encontrado ou erro inesperado
+# Exit codes (same meaning as ping, generalized to multiple targets)
+EXIT_OK = 0  # every target had at least one successful connection
+EXIT_NO_REPLY = 1  # some target had no successful connection
+EXIT_ERROR = 2  # usage error, host not found or unexpected error
 
-MAX_WORKERS = 64  # limite de testes simultâneos
+JOIN_POLL_S = 0.1  # wait in short slices so Ctrl+C is handled promptly (Windows too)
 
 EXAMPLES = """\b
-Exemplos:
-  tcping google.com 443             Roda até Ctrl+C
-  tcping 1.1.1.1 80 -c 10           10 tentativas
-  tcping 1.1.1.1 80 -c 10 -i 0.5    10 tentativas, intervalo de 0.5s
-  tcping meu-servidor 22 -t 5       Timeout de 5s por tentativa
-  tcping -6 google.com 443          Força IPv6
-  tcping google.com 443 -c 5 -r     Só o relatório final
-  tcping google.com 443 -c 5 --json Saída em JSON (uma linha por evento)
-  tcping web1 web2 443              Vários hosts na mesma porta
-  tcping google.com 80 443          Várias portas no mesmo host
-  tcping web1 web2 80 443           Todas as combinações (4 alvos)
+Examples:
+  tcping google.com 443             Run until Ctrl+C
+  tcping 1.1.1.1 80 -c 10           10 attempts
+  tcping 1.1.1.1 80 -c 10 -i 0.5    10 attempts, 0.5s interval
+  tcping my-server 22 -t 5          5s timeout per attempt
+  tcping -6 google.com 443          Force IPv6
+  tcping google.com 443 -c 5 -r     Final report only
+  tcping google.com 443 -c 5 --json JSON output (one line per event)
+  tcping web1 web2 443              Several hosts, same port
+  tcping google.com 80 443          Several ports, same host
+  tcping web1 web2 80 443           Every combination (4 targets)
 """
 
 
-def _probe(target, timeout):
-    """Executado em paralelo: testa um alvo e registra quando terminou."""
-    success, latency, error = check_tcp_port(target.family, target.sockaddr, timeout)
-    return success, latency, error, datetime.now()
+class _Probe(threading.Thread):
+    """Tests one target in the background.
+
+    Daemon thread: on Ctrl+C the program exits right away instead of waiting
+    for connections that are still pending (up to the timeout).
+    """
+
+    def __init__(self, target, timeout):
+        super().__init__(daemon=True)
+        self.target = target
+        self.timeout = timeout
+        self.result = None  # (success, latency, error, finished_at)
+        self.exception = None
+
+    def run(self):
+        try:
+            success, latency, error = check_tcp_port(
+                self.target.family, self.target.sockaddr, self.timeout
+            )
+            self.result = (success, latency, error, datetime.now())
+        except Exception as e:  # reported by the main thread
+            self.exception = e
+
+
+def _run_round(seq, targets, timeout, out):
+    """Tests every target at the same time and records the results in order.
+
+    If interrupted (Ctrl+C), attempts that already finished are still recorded.
+    """
+    probes = [_Probe(t, timeout) for t in targets]
+    for p in probes:
+        p.start()
+
+    pending = list(probes)
+
+    def record(p):
+        if p.exception:
+            raise p.exception
+        success, latency, error, when = p.result
+        p.target.record(success, latency, error)
+        out.attempt(seq, when, p.target, success, latency, error)
+
+    try:
+        while pending:
+            p = pending[0]
+            while p.is_alive():
+                p.join(JOIN_POLL_S)
+            record(pending.pop(0))
+    except KeyboardInterrupt:
+        for p in pending:
+            if not p.is_alive() and p.result:
+                record(p)
+        raise
 
 
 @click.command(epilog=EXAMPLES, context_settings={"help_option_names": ["-h", "--help"]})
@@ -45,30 +94,40 @@ def _probe(target, timeout):
     "--count",
     "-c",
     default=0,
-    type=int,
-    help="Número de pings por alvo (0 para infinito).",
+    type=click.IntRange(min=0),
+    help="Number of attempts per target (0 = infinite).",
     show_default=True,
 )
 @click.option(
-    "--interval", "-i", default=1.0, help="Intervalo (segundos).", show_default=True
+    "--interval",
+    "-i",
+    default=1.0,
+    type=click.FloatRange(min=0),
+    help="Interval between rounds (seconds).",
+    show_default=True,
 )
 @click.option(
-    "--timeout", "-t", default=2.0, help="Timeout (segundos).", show_default=True
+    "--timeout",
+    "-t",
+    default=2.0,
+    type=click.FloatRange(min=0, min_open=True),
+    help="Timeout per attempt (seconds).",
+    show_default=True,
 )
-@click.option("-4", "ipv4", is_flag=True, help="Força o uso de IPv4.")
-@click.option("-6", "ipv6", is_flag=True, help="Força o uso de IPv6.")
+@click.option("-4", "ipv4", is_flag=True, help="Force IPv4.")
+@click.option("-6", "ipv6", is_flag=True, help="Force IPv6.")
 @click.option(
-    "--report", "-r", is_flag=True, help="Exibe só o relatório final, sem as tentativas."
+    "--report", "-r", is_flag=True, help="Show only the final report, not each attempt."
 )
 @click.option(
-    "--json", "as_json", is_flag=True, help="Saída em JSON (uma linha por evento)."
+    "--json", "as_json", is_flag=True, help="JSON output (one line per event)."
 )
 @click.version_option(__version__, "--version", "-V", prog_name="tcping")
 def main(args, count, interval, timeout, ipv4, ipv6, report, as_json):
-    """TCPING - Utilitário de Teste de Conectividade TCP."""
+    """TCPING - TCP connectivity testing tool."""
 
     if ipv4 and ipv6:
-        raise click.UsageError("Use apenas uma das opções -4 ou -6.")
+        raise click.UsageError("Use only one of -4 or -6.")
     family = (
         socket.AF_INET if ipv4 else socket.AF_INET6 if ipv6 else socket.AF_UNSPEC
     )
@@ -91,33 +150,29 @@ def main(args, count, interval, timeout, ipv4, ipv6, report, as_json):
 
     out.start(datetime.now(), active, count)
 
-    start_run = time.time()
+    start_run = time.monotonic()
     unexpected_error = False
-    pool = ThreadPoolExecutor(max_workers=min(len(active), MAX_WORKERS))
     current_round = 0
 
     try:
         while count == 0 or current_round < count:
             current_round += 1
-            # Todos os alvos da rodada são testados ao mesmo tempo
-            futures = [(t, pool.submit(_probe, t, timeout)) for t in active]
-            for t, future in futures:
-                success, latency, error, when = future.result()
-                t.record(success, latency, error)
-                out.attempt(current_round, when, t, success, latency, error)
+            round_start = time.monotonic()
+            _run_round(current_round, active, timeout, out)
 
             if count == 0 or current_round < count:
-                time.sleep(interval)
+                # Interval counted from the start of the round (like ping):
+                # a round longer than the interval starts the next one right away.
+                elapsed = time.monotonic() - round_start
+                time.sleep(max(0.0, interval - elapsed))
 
     except KeyboardInterrupt:
         pass
     except Exception as e:
         out.critical(str(e))
         unexpected_error = True
-    finally:
-        pool.shutdown(wait=False, cancel_futures=True)
 
-    out.finish(active, time.time() - start_run)
+    out.finish(active, time.monotonic() - start_run)
 
     if unexpected_error or unresolved:
         sys.exit(EXIT_ERROR)

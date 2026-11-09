@@ -1,4 +1,4 @@
-"""Fase 4: vários alvos."""
+"""Multiple targets."""
 
 import json
 
@@ -8,7 +8,7 @@ from tcping.cli import main
 
 
 def run(*args):
-    # Terminal largo para as tabelas não quebrarem os nomes dos alvos
+    # Wide terminal so tables do not wrap target names
     return CliRunner().invoke(main, [str(a) for a in args], env={"COLUMNS": "200"})
 
 
@@ -19,9 +19,9 @@ def json_lines(output):
 def test_multi_all_open_exit_0(open_port):
     result = run("127.0.0.1", "localhost", "-4", open_port, "-c", 2, "-i", 0)
     assert result.exit_code == 0
-    assert "2 alvos" in result.output
-    assert "(2 tentativas por alvo)" in result.output
-    assert "Resumo da Execução" in result.output
+    assert "2 targets" in result.output
+    assert "(2 attempts per target)" in result.output
+    assert "Summary" in result.output
     assert f"127.0.0.1:{open_port}" in result.output
     assert f"localhost:{open_port}" in result.output
 
@@ -29,22 +29,22 @@ def test_multi_all_open_exit_0(open_port):
 def test_multi_one_without_reply_exit_1(open_port, closed_port):
     result = run("127.0.0.1", open_port, closed_port, "-c", 1)
     assert result.exit_code == 1
-    assert "FECHADA" in result.output
+    assert "CLOSED" in result.output
 
 
 def test_multi_report_shows_only_summary(open_port, closed_port):
     result = run("127.0.0.1", open_port, closed_port, "-c", 1, "-r")
-    assert "Resumo da Execução" in result.output
-    assert "Histórico" not in result.output  # tabela ao vivo não aparece
+    assert "Summary" in result.output
+    assert "History" not in result.output  # live table is not shown
 
 
 def test_multi_dns_error_continues_and_exits_2(open_port):
     result = run("host-inexistente.invalid", "127.0.0.1", open_port, "-c", 1)
     assert result.exit_code == 2
-    assert "Host não encontrado" in result.output
+    assert "Host not found" in result.output
     assert f"127.0.0.1:{open_port}" in result.output
-    assert "Resumo da Execução" in result.output
-    assert "1 alvo " in result.output  # singular quando só 1 alvo restou
+    assert "Summary" in result.output
+    assert "1 target " in result.output  # singular when only 1 target is left
 
 
 def test_multi_json(open_port, closed_port):
@@ -59,7 +59,7 @@ def test_multi_json(open_port, closed_port):
     }
     assert all(a["host"] == "127.0.0.1" and a["ip"] == "127.0.0.1" for a in attempts)
     assert [s["port"] for s in summaries] == [open_port, closed_port]
-    assert lines[-2:] == summaries  # resumos no fim
+    assert lines[-2:] == summaries  # summaries at the end
 
 
 def test_multi_json_report_and_dns_error(open_port):
@@ -70,7 +70,7 @@ def test_multi_json_report_and_dns_error(open_port):
 
 
 def test_parallel_round_is_not_sequential(closed_port, monkeypatch):
-    """Com 4 alvos de 0.3s cada, uma rodada em paralelo leva ~0.3s, não ~1.2s."""
+    """With 4 targets taking 0.3s each, a parallel round takes ~0.3s, not ~1.2s."""
     import time
 
     def slow(*_):
@@ -85,6 +85,6 @@ def test_parallel_round_is_not_sequential(closed_port, monkeypatch):
 
 def test_usage_errors():
     assert run("443").exit_code == 2
-    assert "ao menos um host" in run("443").output
-    assert "ao menos uma porta" in run("google.com").output
-    assert "Porta inválida" in run("google.com", 70000).output
+    assert "at least one host" in run("443").output
+    assert "at least one port" in run("google.com").output
+    assert "Invalid port" in run("google.com", 70000).output

@@ -12,9 +12,9 @@ def calculate_stats(latencies):
 
 
 def summarize(success_count, fail_count, latencies, duration_s):
-    """Resumo da execução (valores arredondados em 2 casas).
+    """Run summary (values rounded to 2 decimal places).
 
-    `success_rate` é None sem tentativas; `latency_ms` é None sem sucessos.
+    `success_rate` is None without attempts; `latency_ms` is None without successes.
     """
     attempts = success_count + fail_count
     latency = None

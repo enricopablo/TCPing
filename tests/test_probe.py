@@ -12,7 +12,7 @@ def test_resolve_ipv4_literal():
 
 
 def test_resolve_invalid_host():
-    with pytest.raises(ResolveError, match="Host não encontrado"):
+    with pytest.raises(ResolveError, match="Host not found"):
         resolve("host-inexistente.invalid", 80)
 
 
@@ -42,7 +42,7 @@ def test_check_refused_port(closed_port):
     success, latency, error = check_tcp_port(family, sockaddr, timeout=1)
     assert success is False
     assert latency is None
-    assert error == "Recusada"
+    assert error == "Refused"
 
 
 def test_check_open_port_ipv6(open_port_v6):

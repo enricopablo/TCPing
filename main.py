@@ -1,9 +1,9 @@
-"""Atalho para rodar o tcping a partir do clone: `uv run main.py <host> <porta>`."""
+"""Shortcut to run tcping from a clone: `uv run main.py <host> <port>`."""
 
 import sys
 from pathlib import Path
 
-# Garante que src/ esteja no path mesmo sem o pacote instalado.
+# Makes sure src/ is on the path even without the package installed.
 sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 
 from tcping.cli import main  # noqa: E402

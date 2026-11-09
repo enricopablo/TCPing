@@ -5,7 +5,7 @@ import pytest
 
 @pytest.fixture
 def open_port():
-    """Porta TCP local aceitando conexões (o kernel completa o handshake após listen())."""
+    """Local TCP port accepting connections (the kernel completes the handshake after listen())."""
     srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     srv.bind(("127.0.0.1", 0))
     srv.listen(16)
@@ -15,7 +15,7 @@ def open_port():
 
 @pytest.fixture
 def closed_port():
-    """Porta TCP local sem ninguém escutando (conexão recusada)."""
+    """Local TCP port with nothing listening (connection refused)."""
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind(("127.0.0.1", 0))
     port = s.getsockname()[1]
@@ -25,12 +25,12 @@ def closed_port():
 
 @pytest.fixture
 def open_port_v6():
-    """Porta TCP em ::1; pula o teste se o ambiente não tiver IPv6."""
+    """TCP port on ::1; skips the test if the environment has no IPv6."""
     try:
         srv = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
         srv.bind(("::1", 0))
     except OSError:
-        pytest.skip("IPv6 indisponível neste ambiente")
+        pytest.skip("IPv6 not available in this environment")
     srv.listen(16)
     yield srv.getsockname()[1]
     srv.close()

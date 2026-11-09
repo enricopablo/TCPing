@@ -1,4 +1,4 @@
-"""Fase 3: código de saída, --report / -r e --json."""
+"""Exit codes, --report / -r and --json."""
 
 import json
 
@@ -15,7 +15,7 @@ def json_lines(output):
     return [json.loads(line) for line in output.splitlines() if line.strip()]
 
 
-# --- Código de saída (semântica do ping) ---------------------------------
+# --- Exit codes (same meaning as ping) -----------------------------------
 
 
 def test_exit_0_when_port_open(open_port):
@@ -27,8 +27,8 @@ def test_exit_1_when_no_reply(closed_port):
 
 
 def test_exit_0_with_partial_success(open_port, monkeypatch):
-    # 1ª tentativa falha, 2ª tem sucesso -> 0 (igual ao ping)
-    results = iter([(False, None, "Recusada"), (True, 5.0, None)])
+    # 1st attempt fails, 2nd succeeds -> 0 (same as ping)
+    results = iter([(False, None, "Refused"), (True, 5.0, None)])
     monkeypatch.setattr("tcping.cli.check_tcp_port", lambda *a: next(results))
     assert run("127.0.0.1", open_port, "-c", 2, "-i", 0).exit_code == 0
 
@@ -40,9 +40,9 @@ def test_report_hides_attempts_keeps_header_and_summary(open_port):
     for flag in ("-r", "--report"):
         result = run("127.0.0.1", open_port, "-c", 2, "-i", 0, flag)
         assert result.exit_code == 0
-        assert "Testando TCP" in result.output
-        assert "Resumo da Execução" in result.output
-        assert "ABERTA" not in result.output
+        assert "Testing TCP" in result.output
+        assert "Summary" in result.output
+        assert "OPEN" not in result.output
 
 
 # --- --json --------------------------------------------------------------
@@ -82,7 +82,7 @@ def test_json_failed_attempt_uses_null(closed_port):
     attempt, summary = json_lines(result.output)
     assert attempt["status"] == "closed"
     assert attempt["latency_ms"] is None
-    assert attempt["error"] == "Recusada"
+    assert attempt["error"] == "Refused"
     assert summary["latency_ms"] is None
 
 
@@ -94,7 +94,7 @@ def test_json_invalid_host_error():
             "type": "error",
             "host": "host-inexistente.invalid",
             "port": 80,
-            "error": "Host não encontrado",
+            "error": "Host not found",
         }
     ]
 
