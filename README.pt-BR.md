@@ -8,7 +8,7 @@ Uma ferramenta de linha de comando (CLI) robusta para testar a conectividade de 
 ![UV](https://img.shields.io/badge/Managed%20by-UV-purple?logo=python)
 ![OS](https://img.shields.io/badge/OS-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey)
 
-<img width="794" height="395" alt="print-windows" src="https://github.com/user-attachments/assets/c6129d03-b8c3-4003-9165-b621e619f4f3" />
+<img width="773" height="400" alt="print-windows" src="https://github.com/user-attachments/assets/50027b2e-4dd6-47ed-a76a-b7cf68fd7efd" />
 
 ## ✨ Funcionalidades
 
