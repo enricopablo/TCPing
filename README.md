@@ -6,13 +6,7 @@ Uma ferramenta de linha de comando (CLI) robusta para testar a conectividade de 
 ![UV](https://img.shields.io/badge/Managed%20by-UV-purple?logo=python)
 ![OS](https://img.shields.io/badge/OS-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey)
 
-
 <img width="794" height="395" alt="print-windows" src="https://github.com/user-attachments/assets/c6129d03-b8c3-4003-9165-b621e619f4f3" />
-
-<img width="948" height="363" alt="print-linux" src="https://github.com/user-attachments/assets/4e6aa834-bab0-4f88-bb73-b7ce72fce816" />
-
-<img width="821" height="239" alt="print-macos" src="https://github.com/user-attachments/assets/e1c80a12-60f1-4a7c-9c4a-bd09624d6574" />
-
 
 ## ✨ Funcionalidades
 
