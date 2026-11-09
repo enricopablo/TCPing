@@ -21,7 +21,10 @@ Uma ferramenta de linha de comando (CLI) robusta para testar a conectividade de 
 
 ## 🛠️ Pré-requisitos
 
-O único requisito é o `uv` (gerenciador de pacotes Python ultra-rápido).
+* **`uv`** (gerenciador de pacotes Python ultra-rápido): obrigatório.
+* **Git**: necessário para instalar direto do GitHub (`git+https://...`) ou via clone. Sem ele, use a [instalação sem Git](#instalação-sem-git).
+
+### uv
 
 **macOS / Linux:**
 ```bash
@@ -40,6 +43,17 @@ Ou, em qualquer sistema, via `pip`:
 pip install uv
 ```
 
+### Git
+
+Confira se já está instalado com `git --version`. Se não estiver:
+
+| Sistema | Comando |
+|---|---|
+| **Debian / Ubuntu / Linux Mint** | `sudo apt install git` |
+| **Fedora** | `sudo dnf install git` |
+| **macOS** | `xcode-select --install` |
+| **Windows** | `winget install --id Git.Git -e` |
+
 ## 📦 Instalação
 
 Direto do GitHub, sem precisar clonar:
@@ -54,6 +68,14 @@ Ou a partir de um clone local:
 git clone https://github.com/enricopablo/TCPing.git
 cd TCPing/
 uv tool install --force .
+```
+
+### Instalação sem Git
+
+Se o Git não estiver instalado (erro `Git executable not found`), instale a partir do `.zip` do GitHub:
+
+```bash
+uv tool install "tcping @ https://github.com/enricopablo/TCPing/archive/refs/heads/main.zip"
 ```
 
 Pronto! O comando `tcping` fica disponível em qualquer terminal (macOS, Linux e Windows).
@@ -77,7 +99,7 @@ uv tool dir --bin   # pasta do executável
 uv tool dir         # pasta dos ambientes isolados
 ```
 
-Para testar sem instalar nada:
+Para testar sem instalar nada (requer Git):
 
 ```bash
 uvx --from git+https://github.com/enricopablo/TCPing tcping google.com 443
@@ -86,9 +108,15 @@ uvx --from git+https://github.com/enricopablo/TCPing tcping google.com 443
 ### Atualizar / Remover
 
 ```bash
-uv tool upgrade tcping      # instalado via GitHub
+uv tool upgrade tcping      # instalado via GitHub (git+https)
 uv tool install --force .   # instalado via clone (após git pull)
 uv tool uninstall tcping
+```
+
+Instalado sem Git (`.zip`)? Para atualizar, repita o comando de instalação com `--force --reinstall`:
+
+```bash
+uv tool install --force --reinstall "tcping @ https://github.com/enricopablo/TCPing/archive/refs/heads/main.zip"
 ```
 
 ## 🚀 Como Usar

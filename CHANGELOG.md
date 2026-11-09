@@ -4,6 +4,13 @@ Todas as mudanças relevantes deste projeto são documentadas aqui.
 
 O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto adota o [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [Não lançado]
+
+### Documentação
+- README: repositório renomeado de `TCP-Ping` para `TCPing` nos links e comandos.
+- README: Git listado como pré-requisito da instalação pelo GitHub, com comandos de instalação por sistema.
+- README: instalação e atualização sem Git, a partir do `.zip` do GitHub.
+
 ## [0.4.0] - 2026-11-08
 
 ### Adicionado
