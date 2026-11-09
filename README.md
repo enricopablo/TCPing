@@ -6,8 +6,7 @@ Uma ferramenta de linha de comando (CLI) robusta para testar a conectividade de 
 ![UV](https://img.shields.io/badge/Managed%20by-UV-purple?logo=python)
 ![OS](https://img.shields.io/badge/OS-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey)
 
-<img width="910" height="586" alt="tcping-print" src="https://github.com/user-attachments/assets/0dbde8fe-c0be-4be3-83f1-1a989bcb04cf" />
-
+<img width="846" height="393" alt="CleanShot 2026-11-08 at 22 58 09" src="https://github.com/user-attachments/assets/3be66c0b-d72e-4438-9656-399604ad1d9a" />
 
 ## ✨ Funcionalidades
 
